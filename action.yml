@@ -1,0 +1,44 @@
+name: "middleBrick API Security Scan"
+description: "Scan API endpoints for security vulnerabilities and assign risk scores"
+author: "Zevlat Intelligence"
+branding:
+  icon: "shield"
+  color: "blue"
+
+inputs:
+  api-key:
+    description: "middleBrick API key"
+    required: true
+  url:
+    description: "API endpoint URL to scan"
+    required: true
+  method:
+    description: "HTTP method"
+    required: false
+    default: "GET"
+  threshold:
+    description: "Minimum acceptable score (0-100). Action fails if score is below."
+    required: false
+  comment:
+    description: "Post/update a PR comment with results (true/false)"
+    required: false
+    default: "false"
+  base-url:
+    description: "middleBrick API base URL override"
+    required: false
+
+outputs:
+  score:
+    description: "Overall security score (0-100)"
+  grade:
+    description: "Letter grade (A-F)"
+  findings-count:
+    description: "Total number of findings"
+  scan-id:
+    description: "Scan ID for reference"
+  result:
+    description: "Full scan result as JSON string"
+
+runs:
+  using: "node20"
+  main: "dist/index.js"
