@@ -53835,9 +53835,9 @@ class MiddleBrickClient {
         });
         const body = await response.json();
         if (!response.ok) {
-            const message = body.error ||
-                `HTTP ${response.status}: ${response.statusText}`;
-            throw new MiddleBrickError(message, response.status);
+            const parsed = body;
+            const message = parsed.error || `HTTP ${response.status}: ${response.statusText}`;
+            throw new MiddleBrickError(message, response.status, parsed.code);
         }
         return body;
     }
@@ -53847,6 +53847,7 @@ class MiddleBrickClient {
             body: JSON.stringify({
                 apiUrl: params.apiUrl,
                 method: params.method || "GET",
+                headers: params.headers,
             }),
         });
     }
@@ -53881,9 +53882,11 @@ class MiddleBrickClient {
 }
 class MiddleBrickError extends Error {
     statusCode;
-    constructor(message, statusCode) {
+    code;
+    constructor(message, statusCode, code) {
         super(message);
         this.statusCode = statusCode;
+        this.code = code;
         this.name = "MiddleBrickError";
     }
 }
@@ -53897,6 +53900,16 @@ function parseInputs() {
     const apiKey = core.getInput("api-key", { required: true });
     const url = core.getInput("url", { required: true });
     const method = core.getInput("method") || "GET";
+    const headersRaw = core.getInput("headers");
+    let headers;
+    if (headersRaw) {
+        try {
+            headers = JSON.parse(headersRaw);
+        }
+        catch {
+            throw new Error(`Invalid headers JSON: ${headersRaw}`);
+        }
+    }
     const thresholdRaw = core.getInput("threshold");
     const commentRaw = core.getInput("comment");
     const baseUrl = core.getInput("base-url") || undefined;
@@ -53908,7 +53921,7 @@ function parseInputs() {
         }
     }
     const comment = commentRaw === "true";
-    return { apiKey, url, method, threshold, comment, baseUrl };
+    return { apiKey, url, method, headers, threshold, comment, baseUrl };
 }
 
 ;// CONCATENATED MODULE: ./src/outputs.ts
@@ -54094,6 +54107,7 @@ async function run() {
         const result = await client.scanAndWait({
             apiUrl: inputs.url,
             method: inputs.method,
+            headers: inputs.headers,
         });
         setOutputs(result);
         // Write job summary

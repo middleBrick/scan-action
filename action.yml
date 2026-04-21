@@ -16,6 +16,9 @@ inputs:
     description: "HTTP method"
     required: false
     default: "GET"
+  headers:
+    description: "Auth headers as JSON string (e.g. '{\"Authorization\":\"Bearer ${{ secrets.API_TOKEN }}\"}')."
+    required: false
   threshold:
     description: "Minimum acceptable score (0-100). Action fails if score is below."
     required: false
