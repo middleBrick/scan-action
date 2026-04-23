@@ -2,7 +2,7 @@ name: "middleBrick API Security Scan"
 description: "Scan API endpoints for security vulnerabilities and assign risk scores"
 author: "Zevlat Intelligence"
 branding:
-  icon: "shield"
+  icon: "box"
   color: "blue"
 
 inputs:
